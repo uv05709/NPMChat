@@ -52,7 +52,7 @@ export interface MessageContextType {
     limit?: number,
   ) => Promise<any>
   markAsSeen: (messageId: string) => Promise<any>
-  markAllAsSeen: (senderId: string) => Promise<any>
+  markAllAsSeen: (senderId: string) => void
   sendMessage: (
     receiverId: string,
     text: string,
@@ -399,7 +399,7 @@ export const MessageProvider = ({
       const optimisticMessage: Message = {
         _id: clientId,
         clientId,
-        senderId: currentUser.id,
+        senderId: currentUser.id || "",
         receiverId,
         text,
         image: image || undefined,
