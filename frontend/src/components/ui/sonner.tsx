@@ -24,10 +24,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
 const toast = {
   ...originalToast,
-  success: (msg: string, data?: any) => {
+  success: (msg: string, data?: unknown) => {
     if (!(window as any).isFocusMode) return originalToast.success(msg, data)
   },
-  info: (msg: string, data?: any) => {
+  info: (msg: string, data?: unknown) => {
     if (!(window as any).isFocusMode) return originalToast.info(msg, data)
   },
   // We don't mute errors as they might be essential

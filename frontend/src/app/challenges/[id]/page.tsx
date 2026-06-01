@@ -101,8 +101,8 @@ function ChallengeRoomInner() {
       if (socket) {
         socket.emit("challengeSubmission", { challengeId })
       }
-    } catch (error: any) {
-      setOutput(error.message || "Submission failed.")
+    } catch (error: unknown) {
+      setOutput(error instanceof Error ? error.message : "Submission failed.")
     } finally {
       setSubmitting(false)
     }

@@ -1,5 +1,11 @@
 "use client"
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react"
 import { api, setToken } from "./fetcher"
 
 type SessionRestoreCallback = () => void
@@ -68,8 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user)
       setLoading(false)
       return res
-    } catch (e: any) {
-      setError(e.message || "Signup failed")
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Signup failed")
       setLoading(false)
       throw e
     }
@@ -84,8 +90,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user)
       setLoading(false)
       return res
-    } catch (e: any) {
-      setError(e.message || "Login failed")
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Login failed")
       setLoading(false)
       throw e
     }
@@ -100,8 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user)
       setLoading(false)
       return res
-    } catch (e: any) {
-      setError(e.message || "Guest login failed")
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Guest login failed")
       setLoading(false)
       throw e
     }
@@ -137,8 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user)
       setLoading(false)
       return res
-    } catch (e: any) {
-      setError(e.message || "Update failed")
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Update failed")
       setLoading(false)
       throw e
     }

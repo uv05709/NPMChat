@@ -1,14 +1,21 @@
 "use client"
 import React, { useRef, useEffect, useState } from "react"
-import { useMessageContext } from "../../app/MessageContext"
-import { useAuth } from "../../app/AuthContext"
+import { useMessageContext, Message } from "../../app/MessageContext"
+import { useAuth, User } from "../../app/AuthContext"
 import { getInitials } from "../../lib/utils"
 import { useTypingIndicator } from "../useTypingIndicator"
 import { TypingIndicator } from "./TypingIndicator"
 
 import EmojiPicker from "emoji-picker-react"
 import { ModeToggle } from "../ui/mode-toggle"
-import { Check, CheckCheck, Loader, AlertCircle, Image as ImageIcon, RefreshCw } from "lucide-react"
+import {
+  Check,
+  CheckCheck,
+  Loader,
+  AlertCircle,
+  Image as ImageIcon,
+  RefreshCw,
+} from "lucide-react"
 import { SettingsDrawer } from "../ui/settings-drawer"
 import MediaGallery from "./MediaGallery"
 
@@ -22,11 +29,19 @@ function MessageTick({
   status?: string
 }) {
   if (status === "sending") {
-    return <Loader size={14} className="text-gray-400 animate-spin" aria-label="Sending" />
+    return (
+      <Loader
+        size={14}
+        className="text-gray-400 animate-spin"
+        aria-label="Sending"
+      />
+    )
   }
 
   if (status === "failed") {
-    return <AlertCircle size={14} className="text-red-500" aria-label="Failed" />
+    return (
+      <AlertCircle size={14} className="text-red-500" aria-label="Failed" />
+    )
   }
 
   if (seen || status === "read") {
@@ -46,7 +61,7 @@ export default function ChatPanel({
   selectedUser,
   onBack,
 }: {
-  selectedUser: any
+  selectedUser: User | null
   onBack: () => void
 }) {
   const {
@@ -121,7 +136,7 @@ export default function ChatPanel({
     setShowDeleteConfirm(null)
   }
 
-  function addEmoji(emoji: any) {
+  function addEmoji(emoji: { native: string }) {
     setInput((prev) => prev + emoji.native)
     setShowEmoji(false)
   }
@@ -342,7 +357,7 @@ export default function ChatPanel({
       )}
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-[#f3e8ff] dark:bg-accent">
-        {messages.map((msg: any, i: number) => {
+        {messages.map((msg: Message, i: number) => {
           const isMe = msg.senderId === currentUserId
           // Format time from createdAt or timestamp
           let time = ""

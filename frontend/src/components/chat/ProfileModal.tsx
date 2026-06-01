@@ -1,6 +1,6 @@
 import React, { useRef } from "react"
 import { getInitials } from "../../lib/utils"
-
+import { UserProfileDraft } from "./ModernNPMChat"
 
 export default function ProfileModal({
   open,
@@ -11,8 +11,8 @@ export default function ProfileModal({
 }: {
   open: boolean
   onClose: () => void
-  profileDraft: any
-  setProfileDraft: (p: any) => void
+  profileDraft: UserProfileDraft
+  setProfileDraft: (p: React.SetStateAction<UserProfileDraft | null>) => void
   onSave: () => void
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -21,10 +21,14 @@ export default function ProfileModal({
     if (file) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        setProfileDraft((p: any) => ({
-          ...p,
-          avatarUrl: ev.target?.result as string,
-        }))
+        setProfileDraft((p) =>
+          p
+            ? {
+                ...p,
+                avatarUrl: ev.target?.result as string,
+              }
+            : null,
+        )
       }
       reader.readAsDataURL(file)
     }
@@ -74,7 +78,9 @@ export default function ProfileModal({
             type="text"
             value={profileDraft.name}
             onChange={(e) =>
-              setProfileDraft((p: any) => ({ ...p, name: e.target.value }))
+              setProfileDraft((p) =>
+                p ? { ...p, name: e.target.value } : null,
+              )
             }
           />
         </label>
@@ -84,7 +90,7 @@ export default function ProfileModal({
             className="border-2 border-sidebar-border px-4 py-2 text-foreground text-lg bg-card focus:bg-[#39ff14]/40 focus:outline-none focus:border-[#b39ddb] transition-all rounded-lg min-h-[60px]"
             value={profileDraft.bio}
             onChange={(e) =>
-              setProfileDraft((p: any) => ({ ...p, bio: e.target.value }))
+              setProfileDraft((p) => (p ? { ...p, bio: e.target.value } : null))
             }
           />
         </label>

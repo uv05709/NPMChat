@@ -38,7 +38,7 @@ const ChatPanels: React.FC<{ currentUser: User }> = ({ currentUser }) => {
   )
   const { user, logout, updateProfile } = useAuth()
 
-  function handleUserClick(u: any) {
+  function handleUserClick(u: User) {
     setSelectedUser(u)
     if (window.innerWidth < 768) setMobileView("chat")
   }
@@ -63,21 +63,25 @@ const ChatPanels: React.FC<{ currentUser: User }> = ({ currentUser }) => {
     try {
       logout()
       toast.success("Logged out successfully!")
-    } catch (err: any) {
-      toast.error(err.message || "Logout failed, Try again!")
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Logout failed, Try again!",
+      )
     }
   }
 
   const filteredUsers = users
-    .filter((u: any) => u.name.toLowerCase().includes(search.toLowerCase()))
-    .map((u: any) => ({
+    .filter((u: User) =>
+      (u.name || "").toLowerCase().includes(search.toLowerCase()),
+    )
+    .map((u: User) => ({
       ...u,
       unread: unseenMessages[u._id || u.id] || 0,
     }))
 
   const currentSelectedUser = selectedUser
     ? users.find(
-        (user: any) =>
+        (user: User) =>
           (user._id || user.id) === (selectedUser._id || selectedUser.id),
       ) || selectedUser
     : null

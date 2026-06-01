@@ -6,11 +6,16 @@ import { Button } from "@/components/ui/button"
 import { fetcher } from "@/app/fetcher"
 import { useAuth } from "@/app/AuthContext"
 
+interface Problem {
+  _id: string
+  title: string
+}
+
 export default function CreateChallengePage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [problems, setProblems] = useState<any[]>([])
+  const [problems, setProblems] = useState<Problem[]>([])
   const [formData, setFormData] = useState({
     title: "",
     problemId: "",
@@ -62,9 +67,11 @@ export default function CreateChallengePage() {
         "v1",
       )
       router.push(`/challenges/${data._id}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to create challenge", error)
-      alert(`Failed to create challenge: ${error.message || "Unknown error"}`)
+      alert(
+        `Failed to create challenge: ${error instanceof Error ? error.message : "Unknown error"}`,
+      )
     } finally {
       setLoading(false)
     }
@@ -136,7 +143,7 @@ export default function CreateChallengePage() {
                 }
                 className="w-full h-14 px-4 py-2 rounded-none bg-white dark:bg-zinc-900 border-4 border-black text-black dark:text-white font-bold text-lg focus:outline-none focus:ring-0 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)] transition-transform focus:-translate-y-1 focus:translate-x-1 appearance-none cursor-pointer"
               >
-                {problems.map((p: any) => (
+                {problems.map((p: Problem) => (
                   <option key={p._id} value={p._id} className="font-bold">
                     {p.title}
                   </option>
