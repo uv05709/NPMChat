@@ -70,13 +70,13 @@ export async function fetcher<T = any>(
   base: "auth" | "messages" | "v1" = "messages",
   isRetry = false,
 ): Promise<T> {
-  const headers: any = {
-    "Content-Type": "application/json",
-    ...(options.headers || {}),
+  const headers = new Headers(options.headers)
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json")
   }
 
   const t = getToken()
-  if (t) headers["Authorization"] = `Bearer ${t}`
+  if (t) headers.set("Authorization", `Bearer ${t}`)
 
   const fetchOptions: RequestInit = {
     ...options,
@@ -162,12 +162,12 @@ export const api = {
     fetcher<T>(path, { method: "GET" }, base),
   post: <T = any>(
     path: string,
-    body?: any,
+    body?: unknown,
     base: "auth" | "messages" | "v1" = "messages",
   ) => fetcher<T>(path, { method: "POST", body: JSON.stringify(body) }, base),
   put: <T = any>(
     path: string,
-    body?: any,
+    body?: unknown,
     base: "auth" | "messages" | "v1" = "messages",
   ) => fetcher<T>(path, { method: "PUT", body: JSON.stringify(body) }, base),
   delete: <T = any>(
