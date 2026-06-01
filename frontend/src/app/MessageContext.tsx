@@ -52,7 +52,7 @@ export interface MessageContextType {
     limit?: number,
   ) => Promise<any>
   markAsSeen: (messageId: string) => Promise<any>
-  markAllAsSeen: (senderId: string) => Promise<any>
+  markAllAsSeen: (senderId: string) => void
   sendMessage: (
     receiverId: string,
     text: string,
@@ -301,8 +301,10 @@ export const MessageProvider = ({
           `/media/${userId}?page=${page}&limit=${limit}`,
         )
         return data
-      } catch (err: any) {
-        setError(err.message || "Failed to load media messages")
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load media messages",
+        )
         throw err
       }
     },
@@ -399,7 +401,7 @@ export const MessageProvider = ({
       const optimisticMessage: Message = {
         _id: clientId,
         clientId,
-        senderId: currentUser.id,
+        senderId: currentUser.id || currentUser._id || "",
         receiverId,
         text,
         image: image || undefined,
@@ -426,7 +428,7 @@ export const MessageProvider = ({
             msg.clientId === clientId ? { ...newMessage, clientId } : msg,
           ),
         )
-      } catch (err: any) {
+      } catch (err: unknown) {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.clientId === clientId
@@ -434,7 +436,7 @@ export const MessageProvider = ({
               : msg,
           ),
         )
-        setError(err.message || "Failed to send message")
+        setError(err instanceof Error ? err.message : "Failed to send message")
       }
     },
     [currentUser],
@@ -469,7 +471,7 @@ export const MessageProvider = ({
             : msg,
         ),
       )
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessages((prev) =>
         prev.map((msg) =>
           msg._id === failedMessage._id
@@ -477,7 +479,7 @@ export const MessageProvider = ({
             : msg,
         ),
       )
-      setError(err.message || "Retry failed")
+      setError(err instanceof Error ? err.message : "Retry failed")
     }
   }, [])
 
@@ -488,8 +490,8 @@ export const MessageProvider = ({
       setMessages((prev) =>
         prev.map((msg) => (msg._id === messageId ? updatedMessage : msg)),
       )
-    } catch (err: any) {
-      setError(err.message || "Failed to edit message")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to edit message")
     }
   }, [])
 
@@ -500,8 +502,8 @@ export const MessageProvider = ({
       setMessages((prev) =>
         prev.map((msg) => (msg._id === messageId ? deletedMessage : msg)),
       )
-    } catch (err: any) {
-      setError(err.message || "Failed to delete message")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete message")
     }
   }, [])
 
