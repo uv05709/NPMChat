@@ -1,6 +1,14 @@
 import Link from "next/link"
 import { Search, Filter, Code2, Sparkles, ChevronRight } from "lucide-react"
 
+interface Problem {
+  _id: string
+  slug: string
+  title: string
+  difficulty: "Easy" | "Medium" | "Hard"
+  category: string
+}
+
 // SSR fetching of problems
 async function fetchProblems() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
@@ -91,7 +99,7 @@ export default async function ProblemsPage() {
                 </p>
               </div>
             ) : (
-              problems.map((problem: any) => (
+              problems.map((problem: Problem) => (
                 <Link
                   href={`/problems/${problem.slug}`}
                   key={problem._id}

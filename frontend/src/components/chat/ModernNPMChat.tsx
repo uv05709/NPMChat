@@ -4,13 +4,19 @@ import React, { useState, useEffect } from "react"
 import ChatSidebar from "./ChatSidebar"
 import ChatPanel from "./ChatPanel"
 import ProfileModal from "./ProfileModal"
-import { useAuth } from "../../app/AuthContext"
+import { useAuth, User } from "../../app/AuthContext"
 import { api } from "../../app/fetcher"
 import { io, Socket } from "socket.io-client"
 import { MessageProvider, useMessageContext } from "../../app/MessageContext"
 import { toast } from "sonner"
 
-const ChatPanels: React.FC<{ currentUser: any }> = ({ currentUser }) => {
+export interface UserProfileDraft {
+  name: string
+  bio: string
+  avatarUrl: string
+}
+
+const ChatPanels: React.FC<{ currentUser: User }> = ({ currentUser }) => {
   const {
     users,
     unseenMessages,
@@ -25,13 +31,14 @@ const ChatPanels: React.FC<{ currentUser: any }> = ({ currentUser }) => {
   } = useMessageContext()
   const [search, setSearch] = React.useState("")
   const [showProfile, setShowProfile] = React.useState(false)
-  const [profileDraft, setProfileDraft] = React.useState<any>(null)
+  const [profileDraft, setProfileDraft] =
+    React.useState<UserProfileDraft | null>(null)
   const [mobileView, setMobileView] = React.useState<"sidebar" | "chat">(
     "sidebar",
   )
   const { user, logout, updateProfile } = useAuth()
 
-  function handleUserClick(u: any) {
+  function handleUserClick(u: User) {
     setSelectedUser(u)
     if (window.innerWidth < 768) setMobileView("chat")
   }
@@ -56,21 +63,25 @@ const ChatPanels: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     try {
       logout()
       toast.success("Logged out successfully!")
-    } catch (err: any) {
-      toast.error(err.message || "Logout failed, Try again!")
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Logout failed, Try again!",
+      )
     }
   }
 
   const filteredUsers = users
-    .filter((u: any) => u.name.toLowerCase().includes(search.toLowerCase()))
-    .map((u: any) => ({
+    .filter((u: User) =>
+      (u.name || "").toLowerCase().includes(search.toLowerCase()),
+    )
+    .map((u: User) => ({
       ...u,
       unread: unseenMessages[u._id || u.id] || 0,
     }))
 
   const currentSelectedUser = selectedUser
     ? users.find(
-        (user: any) =>
+        (user: User) =>
           (user._id || user.id) === (selectedUser._id || selectedUser.id),
       ) || selectedUser
     : null
